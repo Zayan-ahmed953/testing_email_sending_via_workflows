@@ -154,11 +154,13 @@ jobs:
       - name: Check for CRITICAL findings
         id: check_critical
         run: |
+          # Count CRITICAL findings
           CRITICAL_COUNT=$(grep -c "CRITICAL" artifacts/prowler-report-*/findings.csv || echo 0)
           echo "Found $CRITICAL_COUNT CRITICAL findings"
 
-          # GitHub Actions output requires quotes if it's zero or empty
-          echo "critical_count=${CRITICAL_COUNT}" >> $GITHUB_OUTPUT
+          # Safely write output for GitHub Actions
+          # No quotes, no spaces before 'critical_count='
+          echo critical_count=$CRITICAL_COUNT >> $GITHUB_OUTPUT
 
       - name: Publish SNS notification (Only if CRITICAL found)
         if: steps.check_critical.outputs.critical_count != '0'
