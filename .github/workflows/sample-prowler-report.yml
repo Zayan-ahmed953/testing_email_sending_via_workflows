@@ -33,7 +33,6 @@ jobs:
           # CSV with example findings
           printf '%s\n' \
             'check_id,severity,resource,status,region' \
-            'iam_001,High,User:alice,FAIL,eu-west-1' \
             's3_010,Medium,Bucket:my-logs,FAIL,eu-west-1' \
             'ec2_005,Low,Instance:i-0123456789abcdef0,PASS,eu-west-1' \
             > "$FULL_PATH/findings.csv"
