@@ -136,9 +136,14 @@ jobs:
           path: artifacts/
           if-no-files-found: error
 
+      - name: Zip report folder
+        run: |
+          zip -r prowler-sample-report.zip artifacts/
+
       - name: Upload report to S3
         run: |
-          aws s3 cp prowler-sample-report.zip s3://prowler-report-bucket-980s098/prowler-reports/prowler-sample-report.zip
+          aws s3 cp prowler-sample-report.zip \
+            s3://prowler-report-bucket-980s098/prowler-reports/prowler-sample-report.zip
 
       - name: Publish SNS notification
         run: |
