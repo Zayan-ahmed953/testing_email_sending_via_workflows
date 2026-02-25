@@ -154,16 +154,14 @@ jobs:
       - name: Check for CRITICAL findings
         id: check_critical
         run: |
-          # Count CRITICAL findings
           CRITICAL_COUNT=$(grep -c "CRITICAL" artifacts/prowler-report-*/findings.csv || echo 0)
           echo "Found $CRITICAL_COUNT CRITICAL findings"
-
-          # Safely write output for GitHub Actions
-          # No quotes, no spaces before 'critical_count='
+      
+          # GitHub Actions output must have no quotes and no leading spaces
           echo critical_count=$CRITICAL_COUNT >> $GITHUB_OUTPUT
 
       - name: Publish SNS notification (Only if CRITICAL found)
-        if: steps.check_critical.outputs.critical_count != '0'
+        if: ${{ fromJSON(steps.check_critical.outputs.critical_count) > 0 }}
         run: |
           aws sns publish \
             --topic-arn arn:aws:sns:us-west-1:084828598848:prowler-email-report \
@@ -178,6 +176,34 @@ jobs:
           This link expires in 24 hours.
 
           This alert was triggered automatically from GitHub Actions."
+
+      # - name: Check for CRITICAL findings
+      #   id: check_critical
+      #   run: |
+      #     # Count CRITICAL findings
+      #     CRITICAL_COUNT=$(grep -c "CRITICAL" artifacts/prowler-report-*/findings.csv || echo 0)
+      #     echo "Found $CRITICAL_COUNT CRITICAL findings"
+
+      #     # Safely write output for GitHub Actions
+      #     # No quotes, no spaces before 'critical_count='
+      #     echo critical_count=$CRITICAL_COUNT >> $GITHUB_OUTPUT
+
+      # - name: Publish SNS notification (Only if CRITICAL found)
+      #   if: steps.check_critical.outputs.critical_count != '0'
+      #   run: |
+      #     aws sns publish \
+      #       --topic-arn arn:aws:sns:us-west-1:084828598848:prowler-email-report \
+      #       --subject "CRITICAL Prowler Findings Detected" \
+      #       --message "Hi,
+
+      #     CRITICAL findings were detected in the latest Prowler scan.
+
+      #     Download full report here:
+      #     ${{ steps.presign.outputs.url }}
+
+      #     This link expires in 24 hours.
+
+      #     This alert was triggered automatically from GitHub Actions."
 
   # email-report:
   #   needs: generate-report
