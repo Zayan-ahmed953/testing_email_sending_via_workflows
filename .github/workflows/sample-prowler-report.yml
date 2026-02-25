@@ -151,21 +151,30 @@ jobs:
           URL=$(aws s3 presign s3://prowler-report-bucket-980s098/prowler-reports/prowler-sample-report.zip --expires-in 86400)    #The link expires in 24 hours
           echo "url=$URL" >> $GITHUB_OUTPUT
 
-      - name: Publish SNS notification
+      - name: Check for CRITICAL findings
+        id: check_critical
+        run: |
+          CRITICAL_COUNT=$(grep -c "CRITICAL" artifacts/prowler-report-*/findings.csv || echo 0)
+          echo "Found $CRITICAL_COUNT CRITICAL findings"
+
+          echo "critical_count=$CRITICAL_COUNT" >> $GITHUB_OUTPUT
+
+      - name: Publish SNS notification (Only if CRITICAL found)
+        if: steps.check_critical.outputs.critical_count != '0'
         run: |
           aws sns publish \
             --topic-arn arn:aws:sns:us-west-1:084828598848:prowler-email-report \
-            --subject "Prowler Report Generated" \
+            --subject "CRITICAL Prowler Findings Detected" \
             --message "Hi,
 
-          The latest Prowler report has been generated.
+          CRITICAL findings were detected in the latest Prowler scan.
 
-          Download it here:
+          Download full report here:
           ${{ steps.presign.outputs.url }}
 
           This link expires in 24 hours.
 
-          This was sent automatically from GitHub Actions."
+          This alert was triggered automatically from GitHub Actions."
 
   # email-report:
   #   needs: generate-report
