@@ -41,7 +41,7 @@ jobs:
           # CSV with example findings
           printf '%s\n' \
             'check_id,severity,resource,status,region' \
-            's3_010,Medium,Bucket:my-logs,FAIL,eu-west-1' \
+            's3_010,CRITICAL,Bucket:my-logs,FAIL,eu-west-1' \
             'ec2_005,Low,Instance:i-0123456789abcdef0,PASS,eu-west-1' \
             > "$FULL_PATH/findings.csv"
 
@@ -84,7 +84,7 @@ jobs:
             '      th, td { border: 1px solid #dee2e6; padding: 0.5rem 0.75rem; font-size: 0.9rem; }' \
             '      th { background: #f1f3f5; text-align: left; }' \
             '      .severity-High { color: #c92a2a; font-weight: 600; }' \
-            '      .severity-Medium { color: #d9480f; font-weight: 600; }' \
+            '      .severity-CRITICAL { color: #d9480f; font-weight: 600; }' \
             '      .severity-Low { color: #2b8a3e; font-weight: 600; }' \
             '    </style>' \
             '  </head>' \
@@ -111,7 +111,7 @@ jobs:
             '        </tr>' \
             '        <tr>' \
             '          <td>s3_010</td>' \
-            '          <td class="severity-Medium">Medium</td>' \
+            '          <td class="severity-CRITICAL">CRITICAL</td>' \
             '          <td>Bucket:my-logs</td>' \
             '          <td>FAIL</td>' \
             '          <td>eu-west-1</td>' \
