@@ -145,6 +145,12 @@ jobs:
           aws s3 cp prowler-sample-report.zip \
             s3://prowler-report-bucket-980s098/prowler-reports/prowler-sample-report.zip
 
+      - name: Generate Pre-signed URL
+        id: presign
+        run: |
+          URL=$(aws s3 presign s3://prowler-report-bucket-980s098/prowler-reports/prowler-sample-report.zip --expires-in 86400)
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
       - name: Publish SNS notification
         run: |
           aws sns publish \
@@ -155,7 +161,9 @@ jobs:
           The latest Prowler report has been generated.
 
           Download it here:
-          https://prowler-report-bucket-980s098.s3.amazonaws.com/prowler-reports/prowler-sample-report.zip
+          ${{ steps.presign.outputs.url }}
+
+          This link expires in 24 hours.
 
           This was sent automatically from GitHub Actions."
 
